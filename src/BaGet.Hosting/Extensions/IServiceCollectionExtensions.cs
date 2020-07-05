@@ -22,11 +22,9 @@ namespace BaGet
                     options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 });
 
+            services.AddBaGetApplication(configureAction);
             services.AddHttpContextAccessor();
             services.AddTransient<IUrlGenerator, BaGetUrlGenerator>();
-
-            services.AddBaGetApplication(configureAction);
-
             return services;
         }
     }

@@ -2,6 +2,7 @@ using System;
 using BaGet.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using NuGet.Versioning;
 
 namespace BaGet.Hosting
@@ -11,19 +12,42 @@ namespace BaGet.Hosting
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly LinkGenerator _linkGenerator;
+        private static BaGetOptions _options;
 
-        public BaGetUrlGenerator(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator)
+        private string ReplaceBasePath(string url)
         {
+            if (_options.ProxyBasePath == null)
+            {
+                return url;
+            }
+            var request = _httpContextAccessor.HttpContext.Request;
+            var localhost = string.Concat(
+                request.Scheme,
+                "://",
+                request.Host.ToUriComponent());
+            return string.Concat(_options.ProxyBasePath, url.Substring(localhost.Length));
+        }
+
+        public BaGetUrlGenerator(
+            IHttpContextAccessor httpContextAccessor,
+            LinkGenerator linkGenerator,
+            IConfigureOptions<BaGetOptions> options)
+        {
+            if (_options == null)
+            {
+                _options = new BaGetOptions();
+                options.Configure(_options);
+            }
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
         }
 
         public string GetServiceIndexUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.IndexRouteName,
-                values: null);
+                values: null));
         }
 
         public string GetPackageContentResourceUrl()
@@ -38,42 +62,42 @@ namespace BaGet.Hosting
 
         public string GetPackagePublishResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.UploadPackageRouteName,
-                values: null);
+                values: null));
         }
 
         public string GetSymbolPublishResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.UploadSymbolRouteName,
-                values: null);
+                values: null));
         }
 
         public string GetSearchResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.SearchRouteName,
-                values: null);
+                values: null));
         }
 
         public string GetAutocompleteResourceUrl()
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.AutocompleteRouteName,
-                values: null);
+                values: null));
         }
 
         public string GetRegistrationIndexUrl(string id)
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.RegistrationIndexRouteName,
-                values: new { Id = id.ToLowerInvariant() });
+                values: new { Id = id.ToLowerInvariant() }));
         }
 
         public string GetRegistrationPageUrl(string id, NuGetVersion lower, NuGetVersion upper)
@@ -84,22 +108,22 @@ namespace BaGet.Hosting
 
         public string GetRegistrationLeafUrl(string id, NuGetVersion version)
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.RegistrationLeafRouteName,
                 values: new
                 {
                     Id = id.ToLowerInvariant(),
                     Version = version.ToNormalizedString().ToLowerInvariant(),
-                });
+                }));
         }
 
         public string GetPackageVersionsUrl(string id)
         {
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.PackageVersionsRouteName,
-                values: new { Id = id.ToLowerInvariant() });
+                values: new { Id = id.ToLowerInvariant() }));
         }
 
         public string GetPackageDownloadUrl(string id, NuGetVersion version)
@@ -107,7 +131,7 @@ namespace BaGet.Hosting
             id = id.ToLowerInvariant();
             var versionString = version.ToNormalizedString().ToLowerInvariant();
 
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.PackageDownloadRouteName,
                 values: new
@@ -115,7 +139,7 @@ namespace BaGet.Hosting
                     Id = id,
                     Version = versionString,
                     IdVersion = $"{id}.{versionString}"
-                });
+                }));
         }
 
         public string GetPackageManifestDownloadUrl(string id, NuGetVersion version)
@@ -123,7 +147,7 @@ namespace BaGet.Hosting
             id = id.ToLowerInvariant();
             var versionString = version.ToNormalizedString().ToLowerInvariant();
 
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.PackageDownloadRouteName,
                 values: new
@@ -131,7 +155,7 @@ namespace BaGet.Hosting
                     Id = id,
                     Version = versionString,
                     Id2 = id,
-                });
+                }));
         }
 
         public string GetPackageIconDownloadUrl(string id, NuGetVersion version)
@@ -139,27 +163,27 @@ namespace BaGet.Hosting
             id = id.ToLowerInvariant();
             var versionString = version.ToNormalizedString().ToLowerInvariant();
 
-            return _linkGenerator.GetUriByRouteValues(
+            return ReplaceBasePath(_linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.PackageDownloadIconRouteName,
                 values: new
                 {
                     Id = id,
                     Version = versionString
-                });
+                }));
         }
 
         private string AbsoluteUrl(string relativePath)
         {
             var request = _httpContextAccessor.HttpContext.Request;
 
-            return string.Concat(
+            return ReplaceBasePath(string.Concat(
                 request.Scheme,
                 "://",
                 request.Host.ToUriComponent(),
                 request.PathBase.ToUriComponent(),
                 "/",
-                relativePath);
+                relativePath));
         }
     }
 }

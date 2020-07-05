@@ -15,6 +15,8 @@ namespace BaGet.Core
         /// </summary>
         public string PathBase { get; set; }
 
+        public string ProxyBasePath { get; set; }
+
         /// <summary>
         /// If enabled, the database will be updated at app startup by running
         /// Entity Framework migrations. This is not recommended in production.
@@ -37,10 +39,6 @@ namespace BaGet.Core
         /// </summary>
         public bool IsReadOnlyMode { get; set; } = false;
 
-        /// <summary>
-        /// The URLs the BaGet server will use.
-        /// As per documentation <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-3.1#server-urls">here (Server URLs)</a>.
-        /// </summary>
         public string Urls { get; set; }
 
         public DatabaseOptions Database { get; set; }

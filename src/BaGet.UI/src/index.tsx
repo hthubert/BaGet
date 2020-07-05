@@ -6,6 +6,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import App from './App';
 
+import { config } from './config';
 import DisplayPackage from './DisplayPackage/DisplayPackage';
 import Upload from './Upload';
 
@@ -18,9 +19,8 @@ initializeIcons();
 ReactDOM.render(
   <Router>
     <App>
-      <Route path="/packages/:id/:version?" component={DisplayPackage} />
-
-      <Route path="/upload" component={Upload} />
+      <Route path={`${config.apiRouteRoot}/packages/:id/:version?`} component={DisplayPackage} />
+      <Route path={`${config.apiRouteRoot}/upload`} component={Upload} />
     </App>
   </Router>,
   document.getElementById('root') as HTMLElement

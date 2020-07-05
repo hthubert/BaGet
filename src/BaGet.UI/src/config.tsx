@@ -1,5 +1,6 @@
 let config = {
-  apiUrl: "__BAGET_PLACEHOLDER_API_URL__"
+  apiUrl: "__BAGET_PLACEHOLDER_API_URL__",
+  apiRouteRoot: ""
 };
 
 // When runing `npm test` react-script automaticaly set this env variable
@@ -9,7 +10,8 @@ if (process.env.NODE_ENV === 'test' && config.apiUrl.startsWith("__BAGET_PLACEHO
 }
 
 if (config.apiUrl.startsWith("__BAGET_PLACEHOLDER_")) {
-  config.apiUrl = "";
+  config.apiUrl = "http://data.quantbox.cn/baget";
+  config.apiRouteRoot = "/baget"
 }
 
 if (config.apiUrl.endsWith('/')) {

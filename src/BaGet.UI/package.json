@@ -6,6 +6,7 @@
     "NuGet",
     "BaGet"
   ],
+  "homepage": "http://data.quantbox.cn/baget/",
   "license": "MIT",
   "author": "Loic Sharma",
   "repository": "github:loic-sharma/BaGet",

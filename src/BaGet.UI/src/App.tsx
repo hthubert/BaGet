@@ -1,5 +1,5 @@
 import * as React from 'react';
-
+import { config } from './config';
 import { Action, Location } from 'history';
 import { withRouter } from 'react-router';
 import { NavLink, Route, RouteComponentProps } from 'react-router-dom';
@@ -16,9 +16,7 @@ class App extends React.Component<RouteComponentProps, IAppState> {
 
   constructor(props: RouteComponentProps) {
     super(props);
-
     this.state = { input: "" };
-
     this.props.history.listen(this.onRouteChange);
   }
 
@@ -42,8 +40,8 @@ class App extends React.Component<RouteComponentProps, IAppState> {
           <div className="row">
             <div id="navbar" className="col-sm-12">
               <ul className="nav navbar-nav" role="tablist">
-                <li role="presentation"><NavLink to="/" exact={true} role="tab"><span>Packages</span></NavLink></li>
-                <li role="presentation"><NavLink to="/upload"><span>Upload</span></NavLink></li>
+                <li role="presentation"><NavLink to={`${config.apiRouteRoot}/`} exact={true} role="tab"><span>Packages</span></NavLink></li>
+                <li role="presentation"><NavLink to={`${config.apiRouteRoot}/upload`}><span>Upload</span></NavLink></li>
                 <li role="presentation">
                   <a role="tab" href="https://loic-sharma.github.io/BaGet/" target="_blank" rel="noopener noreferrer">
                     <span>Documentation</span>
@@ -74,7 +72,7 @@ class App extends React.Component<RouteComponentProps, IAppState> {
     if (this.state.input.length === 0) {
       return (
         <section role="main" className="container main-container">
-          <Route exact={true} path="/" render={this.renderSearch} />
+          <Route exact={true} path={`${config.apiRouteRoot}/`} render={this.renderSearch} />
 
           {this.props.children}
         </section>
