@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { Link } from 'react-router-dom';
-
+import { config } from '../config';
 import './Versions.css';
 
 export interface IPackageVersion {
@@ -66,7 +66,7 @@ export class Versions extends React.Component<IVersionsProps, IVersionsState> {
 
     return (
       <tr key={packageVersion.version} className={className}>
-        <td><Link to={`/packages/${this.props.packageId}/${packageVersion.version}`}>{packageVersion.version}</Link></td>
+        <td><Link to={`${config.apiRouteRoot}/packages/${this.props.packageId}/${packageVersion.version}`}>{packageVersion.version}</Link></td>
         <td>{packageVersion.downloads}</td>
         <td>{this.dateToString(packageVersion.date)}</td>
       </tr>

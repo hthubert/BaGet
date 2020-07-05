@@ -175,7 +175,7 @@ class SearchResults extends React.Component<ISearchResultsProps, ISearchResultsS
                 </div>
                 <div className="col-sm-11">
                   <div>
-                    <Link to={`/packages/${value.id}`} className="package-title">{value.id}</Link>
+                    <Link to={`${config.apiRouteRoot}/packages/${value.id}`} className="package-title">{value.id}</Link>
                     <span>by: {value.authors}</span>
                   </div>
                   <ul className="info">
